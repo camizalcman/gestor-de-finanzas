@@ -1,6 +1,16 @@
-<script>
+<script setup>
+
+import { ref } from 'vue' //Importo utilidades reactivas
+
+//Declaro variables reactivas
+const monto = ref('') 
+const categoria = ref('')
+
+const emit = defineEmits(['agregar-gasto'])
+
+
 //Exporto el componente para que pueda ser utilizado en App.vue
-export default{
+/*export default{
     name: 'FormGastos', //Nombre del componente
 
     data() {
@@ -36,7 +46,7 @@ export default{
         }
     }
 
-}
+}*/
 </script>
 
 <template>
