@@ -1,20 +1,20 @@
 <script>
 //Exporto el componente para que pueda ser utilizado en App.vue
 export default{
-    name: 'FormIngreso', //Nombre del componente
+    name: 'FormGastos', //Nombre del componente
 
     data() {
         return {
             //Defino las variables reactivas
             monto: '',       
-            categoria: ''     
+            categoria: '',    
         }
     },
 
     methods: {
     //Defino las funciones del componente
     
-        enviarIngreso() {
+        enviarGasto() {
             //Se ejecutará cuando el usuario envíe el formulario
             //Valido que no estén vacíos los campos
             if (!this.monto || !this.categoria){
@@ -22,13 +22,13 @@ export default{
             } 
 
             //Creo un objeto con los datos ingresados
-            const nuevoIngreso = {
+            const nuevoGasto = {
                 monto: Number(this.monto),  
                 categoria: this.categoria
             }
 
             // Avisamos al componente padre App.vue que hay un nuevo ingreso
-            this.$emit('agregar-ingreso', nuevoIngreso) //nombre del evento, objeto con datos
+            this.$emit('agregar-gasto', nuevoGasto) //nombre del evento, objeto con datos
 
             //limpio los datos del formulario
             this.monto = ''
@@ -40,7 +40,7 @@ export default{
 </script>
 
 <template>
-  <form @submit.prevent="enviarIngreso"> <!--La función que se ejecuta al enviar-->
+  <form @submit.prevent="enviarGasto"> <!--La función que se ejecuta al enviar-->
     <div>
       <label>Monto:</label>
       <input type="number" v-model="monto" placeholder="Ingrese el monto"> <!-- v-model="monto" se vincula el input con la variable del data. Cada vez que escribís algo, monto o categoria se actualiza automáticamente.-->
@@ -51,7 +51,7 @@ export default{
       <input type="text" v-model="categoria" placeholder="Ingrese la categoría">
     </div>
 
-    <button type="submit">Agregar ingreso</button>
+    <button type="submit">Agregar gasto</button>
   </form>
 </template>
 
@@ -72,7 +72,7 @@ input {
 
 button {
   padding: 8px;
-  background-color:#00162e;
+  background-color: #00162e;
   color: white;
   border: none;
   border-radius: 4px;
