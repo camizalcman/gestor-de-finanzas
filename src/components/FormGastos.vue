@@ -6,62 +6,55 @@ import { ref } from 'vue' //Importo utilidades reactivas
 const monto = ref('') 
 const categoria = ref('')
 
-const emit = defineEmits(['agregar-gasto'])
+//Se declaran los eventos que el componente puede emitir para avisar al padre
+//Emit es una función que permite avisar al componente padre que ocurrió un evento
+const emit = defineEmits(['agregar-gasto']);
 
-
-//Exporto el componente para que pueda ser utilizado en App.vue
-/*export default{
-    name: 'FormGastos', //Nombre del componente
-
-    data() {
-        return {
-            //Defino las variables reactivas
-            monto: '',       
-            categoria: '',    
-        }
-    },
-
-    methods: {
-    //Defino las funciones del componente
-    
-        enviarGasto() {
-            //Se ejecutará cuando el usuario envíe el formulario
-            //Valido que no estén vacíos los campos
-            if (!this.monto || !this.categoria){
-                return
-            } 
-
-            //Creo un objeto con los datos ingresados
-            const nuevoGasto = {
-                monto: Number(this.monto),  
-                categoria: this.categoria
-            }
-
-            // Avisamos al componente padre App.vue que hay un nuevo ingreso
-            this.$emit('agregar-gasto', nuevoGasto) //nombre del evento, objeto con datos
-
-            //limpio los datos del formulario
-            this.monto = ''
-            this.categoria = ''
-        }
+//función que se ejecutará al enviar formulario
+function enviarGasto () {
+  
+  if (monto.value === '' || categoria.value.trim() === ''){
+    return
+    // Validos que los campos no estén vacíos. Si alguno está vacío, la función termina
+  } else {
+    const nuevoGasto = {
+      monto: Number(monto.value),         
+      // Convertimos el monto que viene como texto a número
+      categoria: categoria.value.trim()   
+      // Limpiamos espacios al inicio o final de la categoría
     }
 
-}*/
+  emit('agregar-gasto', nuevoGasto)
+  // Avisamos al padre que hay un nuevo gasto y le pasamos los datos
+
+  monto.value = ''
+  // Reiniciamos el campo monto para que quede vacío
+  categoria.value = ''
+  // Reiniciamos el campo categoría para que quede vacío
+  }
+  
+}
+
 </script>
 
 <template>
-  <form @submit.prevent="enviarGasto"> <!--La función que se ejecuta al enviar-->
+  <form @submit.prevent="enviarGasto">
+    <!-- Cuando se envía el formulario, se ejecuta la función enviarGasto y no se recarga la página -->
+
     <div>
       <label>Monto:</label>
-      <input type="number" v-model="monto" placeholder="Ingrese el monto"> <!-- v-model="monto" se vincula el input con la variable del data. Cada vez que escribís algo, monto o categoria se actualiza automáticamente.-->
+      <input type="number" v-model="monto" placeholder="Ingrese el monto" />
+      <!-- v-model conecta el input con la variable reactiva monto. Cada cambio en el input actualiza monto automáticamente -->
     </div>
 
     <div>
       <label>Categoría:</label>
-      <input type="text" v-model="categoria" placeholder="Ingrese la categoría">
+      <input type="text" v-model="categoria" placeholder="Ingrese la categoría" />
+      <!-- v-model conecta el input con la variable reactiva categoria -->
     </div>
 
     <button type="submit">Agregar gasto</button>
+    <!-- Botón para enviar el formulario -->
   </form>
 </template>
 
