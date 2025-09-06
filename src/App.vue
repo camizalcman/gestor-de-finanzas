@@ -1,6 +1,6 @@
 <script>
   import Ingreso from './components/FormIngresos.vue'
-  import Gasto from './components/FormGastos.vue'
+  import Gasto from './components/FormMovimientos.vue'
 
 
   export default {
