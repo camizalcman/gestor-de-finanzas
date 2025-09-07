@@ -1,7 +1,8 @@
 <script setup>
 
-import { ref } from 'vue' //Importo utilidades reactivas
+import { ref, computed } from 'vue' //Importo utilidades reactivas
 
+//PROPS
 const props = defineProps({
   tipo: { // Ingreso o Gasto
     type: String,
@@ -9,32 +10,45 @@ const props = defineProps({
   }
 })
 
-
+//EMITS
 //Se declaran los eventos que el componente puede emitir para avisar al padre
-//Emit es una función que permite avisar al componente padre que ocurrió un evento
-const emit = defineEmits(['agregar-movimiento']);
+const emit = defineEmits(['agregar-movimiento', 'cerrar'])
 
-//variables reactivas
+//variables reactivas - estado local
 const monto = ref('')
 const categoria = ref('')
 const nombre = ref('')
 
+//LISTAS DE CATEGORÍAS
+const categoriasIngreso = ['Sueldo', 'Freelance', 'Otros']
+const categoriasGasto = ['Comida', 'Transporte', 'Servicios', 'Ocio', 'Ropa', 'Otros']
+
+// Según el tipo de movimiento, devuelvo la lista de categorías que corresponde
+const categoriasDisponibles = computed(() => {
+  if (props.tipo === 'Ingreso') {
+    return categoriasIngreso
+  } else {
+    return categoriasGasto
+  }
+})
+
 //función que se ejecutará al enviar formulario
 function enviarMovimiento () {
   
-  if (monto.value === '' || nombre.value.trim() === ''){
+  if (monto.value === '' || nombre.value.trim() === '' || categoria.value === '') {
+    alert('Por favor, completa todos los campos.')
     return
     // Validos que los campos no estén vacíos. Si alguno está vacío, la función termina
   } else {
-    const nuevoGasto = {
+    const nuevoMovimiento = {
       tipo: props.tipo, // le avisamos si es Ingreso o Gasto
       monto: Number(monto.value), // Convertimos el monto que viene como texto a número
       categoria: categoria.value,
       nombre: nombre.value
     }
 
-    emit('agregar-movimiento', nuevoGasto)
     // Avisamos al padre que hay un nuevo gasto y le pasamos los datos
+    emit('agregar-movimiento', nuevoMovimiento)
 
     //vacio los campos
     monto.value = ''
@@ -44,11 +58,17 @@ function enviarMovimiento () {
   
 }
 
+//Cuando el usuario apreta "Cancelar", avisamos al padre para que cierre
+  function cancelar() {
+    emit('cerrar')
+  }
+
 </script>
 
 <template>
    <form @submit.prevent="enviarMovimiento">
     <!-- Cuando se envía el formulario, se ejecuta enviarMovimiento y no recarga la página -->
+    <h3>Agregar {{ props.tipo }}</h3>
 
     <div>
       <label>Nombre:</label>
@@ -62,35 +82,49 @@ function enviarMovimiento () {
 
     <div>
       <label>Categoría:</label>
-      <input type="text" v-model="categoria" placeholder="Ingrese la categoría" />
+      <!-- v-model="categoria" conecta el valor seleccionado con la variable reactiva "categoria" del componente.-->
+      <select v-model="categoria">
+        <option value="" disabled>Seleccione una categoría</option>
+        <!-- v-for recorre el array categoriasDisponibles y presenta una opcion para cada elemento-->
+        <!-- :value="cat" es el valor real que guarda Vue al elegir esa opción-->
+        <!-- :key="cat" es un identificador único-->
+        <option v-for="cat in categoriasDisponibles" :key="cat" :value="cat">
+          {{ cat }}
+        </option>
+      </select>
     </div>
 
-    <button type="submit">Agregar</button>
-    <!-- Mostramos el tipo dinámicamente -->
+    <div class="actions">
+      <!-- Botón cancelar llama a la función cancelar(), que emite 'cerrar' al padre para cerrar el modal  -->
+      <button type="button" @click="cancelar" class="btn-cancel">Cancelar</button>
+      <button type="submit">Agregar {{ props.tipo }}</button>
+    </div>
   </form>
 </template>
 
 <style scoped>
-form {
+.form-mov {
   display: flex;
   flex-direction: column;
   gap: 10px;
-  max-width: 300px;
-  margin: 20px auto;
+  min-width: 280px;
 }
-
-input {
+input, select {
   padding: 6px;
   border: 1px solid #ccc;
   border-radius: 4px;
 }
-
+.actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+}
 button {
-  padding: 8px;
-  background-color: #00162e;
-  color: white;
+  padding: 8px 12px;
+  border-radius: 6px;
   border: none;
-  border-radius: 4px;
   cursor: pointer;
 }
+button[type="submit"] { background: #00162e; color: white; }
+.btn-cancel { background: #eee; color: #222; }
 </style>

@@ -1,70 +1,221 @@
-<script>
-  import Ingreso from './components/FormIngresos.vue'
-  import Gasto from './components/FormMovimientos.vue'
+<script setup>
+  import { ref, computed } from 'vue'
+  import FormMovimiento from './components/FormMovimientos.vue'
 
+  //ESTADO GLOBAL
+  //Guardo todos los movimientos (ingresos y gastos) en un solo array
+  const movimientos = ref([])
 
-  export default {
-      name: 'App',
-      components: {
-        Ingreso, //Lo registramos para poder usarlo en el template
-        Gasto
-    },
+  // Control del modal: null = cerrado, 'Ingreso' = abrir ingreso, 'Gasto' = abrir gasto
+  const modalTipo = ref(null)
 
-    data() {
-      return {
-        ingresos: [], //Para guardar todos los ingresos
-        gastos: []
-      }
-    },
-
-    methods: {
-      agregarIngreso(nuevoIngreso) {
-        // Agregamos el ingreso que viene del hijo al array de ingresos
-        this.ingresos.push(nuevoIngreso)
-      },
-
-      agregarGasto(nuevoGasto) {
-        // Agregamos el gasto que viene del hijo al array de gastos
-        this.gastos.push(nuevoGasto)
-      }
-    }
+  //Funciones para controlar el modal
+  function abrirModal(tipo) {
+    // Abrimos el modal y definimos si es ingreso o gasto
+    modalTipo.value = tipo
   }
- 
+
+  function cerrarModal() {
+    // Cerramos el modal
+    modalTipo.value = null
+  }
+
+  //Manejo del evento emitido por el hijo
+  function agregarMovimiento(nuevo) {
+    //"nuevo" es un objeto con { tipo, monto, categoria, nombre }
+    movimientos.value.push(nuevo)
+
+    // Cerramos el modal automáticamente
+    cerrarModal()
+  }
+
+  //Filtrar movimientos por tipo
+  const ingresos = computed(() => movimientos.value.filter(mov => mov.tipo === 'Ingreso'))
+  const gastos = computed(() => movimientos.value.filter(mov => mov.tipo === 'Gasto'))
+
+  //Cálculo de ingresos y gastos totales de forma reactiva
+  const totalIngresos = computed(() => {
+    let suma = 0
+    for (let i = 0; i < ingresos.value.length; i++) {
+      suma += ingresos.value[i].monto
+    }
+    return suma
+  })
+
+  const totalGastos = computed(() => {
+    let suma = 0
+    for (let i = 0; i < gastos.value.length; i++) {
+      suma += gastos.value[i].monto
+    }
+    return suma
+  })
+  
+  //Cálculo de saldo
+  const saldo = computed(() => totalIngresos.value - totalGastos.value)
+
 </script>
 
 <template>
-  <div class="contenedor df">
-    <div>
-      <h1>Ingresos</h1>
-      <Ingreso @agregar-ingreso="agregarIngreso"/> <!-- Aca estoy agregando el componente Ingreso. @agregar-ingreso escucha el evento que el hijo emite con $emit y agregarIngreso es el método del padre que se ejecuta (definido acá) cuando ocurre ese evento -->
-      <h2>Lista de ingresos:</h2>
-      <ul>
-        <li v-for="ingreso in ingresos"><!-- v-for recorre el array-->
-          {{ ingreso.monto }} - {{ ingreso.categoria }}
-        </li>
-      </ul>
+  <main class="w80 pt2-5">
+    <div class="contSaldo">
+      <h2>Saldo actual ${{ saldo }}</h2>
     </div>
 
-    <div>
-      <h1>Gastos</h1>
-      <Gasto @agregar-gasto="agregarGasto"/> <!-- @agregar-gasto escucha el evento que el hijo emite con $emit y agregarGasto es el método del padre que se ejecuta (definido acá) cuando ocurre ese evento -->
-      <h2>Lista de gastos:</h2>
-      <ul>
-        <li v-for="gasto in gastos"><!-- v-for recorre el array-->
-          {{ gasto.monto }} - {{ gasto.categoria }}
-        </li>
-      </ul>
+    <!--Totales ingresos y gastos-->
+    <section class="resumen">
+      <div class="w50">
+        <div class="contTotales w100">
+          <h2>Total Ingresos ${{ totalIngresos }}</h2>
+          <!-- Cuando se hace click, abrimos el modal con tipo 'Ingreso' -->
+          <button class="button" @click="abrirModal('Ingreso')">Agregar ingreso</button>
+        </div>
+
+        <div class="lista">
+          <h2>Lista de ingresos</h2>
+          <ul>
+            <!-- Recorremos todos los ingresos -->
+            <li v-for="(i, indice) in ingresos" :key="indice">
+              {{ i.nombre }} — ${{ i.monto }} ({{ i.categoria }})
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div class="w50">
+        <div class="contTotales w100">
+          <h2>Total Gastos ${{ totalGastos }}</h2>
+          <!-- Cuando se hace click, abrimos el modal con tipo 'Gasto' -->
+          <button class="button" @click="abrirModal('Gasto')">Agregar gasto</button>
+        </div>
+
+        <div  class="lista">
+          <h2>Lista de gastos</h2>
+          <ul>
+            <!-- Recorremos todos los gastos -->
+            <li v-for="(g, indice) in gastos" :key="indice">
+              {{ g.nombre }} — ${{ g.monto }} ({{ g.categoria }})
+            </li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- MODAL -->
+    <!-- Solo se renderiza si modalTipo NO es null -->
+    <div v-if="modalTipo" class="modal-overlay" @click.self="cerrarModal">
+      <div class="modal">
+        <!-- Título dinámico según el tipo de movimiento -->
+        <h2>Agregar {{ modalTipo }}</h2>
+
+        <!-- Componente hijo: FormMovimiento -->
+        <!-- Props: tipo (Ingreso o Gasto) -->
+        <!-- Eventos: agregar-movimiento → guarda el movimiento en el array -->
+        <!--          cerrar → cierra el modal -->
+        <FormMovimiento
+          :tipo="modalTipo"
+          @agregar-movimiento="agregarMovimiento"
+          @cerrar="cerrarModal"
+        />
+      </div>
     </div>
-  </div>
+  </main>
 </template>
 
 <style scoped>
-.df{
+.w100{
+  width: 100%;
+}
+
+.w80{
+  width: 80%;
+}
+
+.w50{
+  width: 50%;
+}
+
+.bordeRojo{
+  border: solid 2px red;
+}
+
+.pt2-5{
+  padding-top: 2.5em;
+}
+
+.contSaldo{
+  background-color: #65EEC3;
+  box-shadow: 0 0 8px 6px rgba(255, 255, 255, 0.3);
+  border-radius: 10px;
+  padding: 1em;
+  color: white;
+  margin-bottom: 2em;
+  font-family: "Plus Jakarta Sans", sans-serif;
+  font-weight: 800;
+}
+
+main { 
+  margin: 0 auto; 
+}
+
+.resumen { 
+  display: flex; 
+  gap: 20px; 
+  align-items: baseline; 
+}
+
+.contTotales{
+  background-color: #FFB143;
+  box-shadow: 0 0 8px 6px rgba(255, 255, 255, 0.3);
+  border-radius: 10px;
+  padding: 1em;
+  color: white;
+  margin-bottom: 1em;
+  font-family: "Plus Jakarta Sans", sans-serif;
+  font-weight: 700;
   display: flex;
+  justify-content: space-between;
 }
-.contenedor{
-  gap:2em
+
+.button{
+  padding: 10px 14px; 
+  border-radius: 8px; 
+  border-color: #060028; 
+  background: #FFB143;
+  cursor: pointer; 
+  color: #060028; 
+  font-family: "Plus Jakarta Sans", sans-serif;
+}
+
+.lista{
+  border: thin solid #FFB143;
+  box-shadow: 0 0 8px 6px rgba(255, 255, 255, 0.3);
+  border-radius: 8px; 
+  padding: 1em;
+  color: white;
+  font-family: "Plus Jakarta Sans", sans-serif;
 }
 
 
+/* Layout de listas 
+.listas { display: flex; gap: 40px; }
+.listas ul { margin: 0; padding: 0; list-style: none; }
+.listas li { padding: 6px 0; border-bottom: 1px solid #eee; }*/
+
+/* MODAL */
+.modal-overlay {
+  position: fixed;
+  inset: 0; /* top:0; left:0; right:0; bottom:0 */
+  background: rgba(0,0,0,0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 40;
+}
+.modal {
+  background: white;
+  border-radius: 8px;
+  padding: 18px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+  min-width: 320px;
+}
 </style>
