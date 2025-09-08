@@ -53,6 +53,44 @@
   //Cálculo de saldo
   const saldo = computed(() => totalIngresos.value - totalGastos.value)
 
+  //Calculo de ingresos por categoría
+  const ingresosPorCat = computed(() => {
+    const resultado = {}
+
+      for (let i = 0; i < ingresos.value.length; i++) {
+        const ing = ingresos.value[i]
+
+        //Si la categoría ya existe, sumo
+        if (resultado[ing.categoria] !== undefined) {
+          resultado[ing.categoria] = resultado[ing.categoria] + ing.monto
+        } 
+        //Si la categoría no existe, la creo
+        else {
+          resultado[ing.categoria] = ing.monto
+      }
+    }
+    return resultado
+  })
+
+  //Calculo de gastos por categoría
+  const gastosPorCat = computed(() => {
+    const resultado = {}
+
+      for (let i = 0; i < gastos.value.length; i++) {
+        const g = gastos.value[i]
+
+        //Si la categoría ya existe, sumo
+        if (resultado[g.categoria] !== undefined) {
+          resultado[g.categoria] = resultado[g.categoria] + g.monto
+        } 
+        //Si la categoría no existe, la creo
+        else {
+          resultado[g.categoria] = g.monto
+      }
+    }
+    return resultado
+  })
+  
 </script>
 
 <template>
@@ -101,17 +139,13 @@
 
 
     <!-- MODAL -->
-    <!-- Solo se renderiza si modalTipo NO es null -->
+    <!-- Solo se muestra si modalTipo no es null -->
     <div v-if="modalTipo" class="modal-overlay" @click.self="cerrarModal">
       <div class="modal">
-        <!-- Título dinámico según el tipo de movimiento -->
-        <h2>Agregar {{ modalTipo }}</h2>
-
-        <!-- Componente hijo: FormMovimiento -->
-        <!-- Props: tipo (Ingreso o Gasto) -->
-        <!-- Eventos: agregar-movimiento → guarda el movimiento en el array -->
-        <!--          cerrar → cierra el modal -->
-        <FormMovimiento
+        <!-- Componente hijo -->
+        <!-- El hijo está obligado a pasarle un valor al hijo cuando usa este comp.-->
+        <!-- : es la sintaxis de Vue para pasar el valor de una variable de JS (no un texto)".-->
+        <FormMovimiento 
           :tipo="modalTipo"
           @agregar-movimiento="agregarMovimiento"
           @cerrar="cerrarModal"
@@ -144,10 +178,10 @@
 
 .contSaldo{
   background-color: #65EEC3;
-  box-shadow: 0 0 8px 6px rgba(255, 255, 255, 0.3);
+  box-shadow: 0 0 8px 5px rgba(255, 255, 255, 0.3);
   border-radius: 10px;
   padding: 1em;
-  color: white;
+  color:#060028;
   margin-bottom: 2em;
   font-family: "Plus Jakarta Sans", sans-serif;
   font-weight: 800;
@@ -165,10 +199,10 @@ main {
 
 .contTotales{
   background-color: #FFB143;
-  box-shadow: 0 0 8px 6px rgba(255, 255, 255, 0.3);
+  box-shadow: 0 0 8px 5px rgba(255, 255, 255, 0.3);
   border-radius: 10px;
   padding: 1em;
-  color: white;
+  color:#060028;
   margin-bottom: 1em;
   font-family: "Plus Jakarta Sans", sans-serif;
   font-weight: 700;
@@ -188,23 +222,28 @@ main {
 
 .lista{
   border: thin solid #FFB143;
-  box-shadow: 0 0 8px 6px rgba(255, 255, 255, 0.3);
+  box-shadow: 0 0 8px 5px rgba(255, 255, 255, 0.3);
   border-radius: 8px; 
   padding: 1em;
   color: white;
   font-family: "Plus Jakarta Sans", sans-serif;
 }
 
+ul { 
+  margin: 0; 
+  padding: 0; 
+  list-style: none; 
+}
 
-/* Layout de listas 
-.listas { display: flex; gap: 40px; }
-.listas ul { margin: 0; padding: 0; list-style: none; }
-.listas li { padding: 6px 0; border-bottom: 1px solid #eee; }*/
+li { 
+  padding: 12px 0; 
+  border-bottom: 0.5px solid #eee; 
+}
 
 /* MODAL */
 .modal-overlay {
   position: fixed;
-  inset: 0; /* top:0; left:0; right:0; bottom:0 */
+  inset: 0; 
   background: rgba(0,0,0,0.45);
   display: flex;
   align-items: center;
@@ -213,9 +252,10 @@ main {
 }
 .modal {
   background: white;
-  border-radius: 8px;
-  padding: 18px;
+  border-radius: 10px;
+  padding: 2em;
   box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-  min-width: 320px;
+  min-width: 340px;
+   
 }
 </style>

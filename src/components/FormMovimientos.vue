@@ -113,6 +113,8 @@ input, select {
   padding: 6px;
   border: 1px solid #ccc;
   border-radius: 4px;
+  margin-bottom: 1em;
+  margin-left: 0.6em;
 }
 .actions {
   display: flex;
@@ -125,6 +127,6 @@ button {
   border: none;
   cursor: pointer;
 }
-button[type="submit"] { background: #00162e; color: white; }
-.btn-cancel { background: #eee; color: #222; }
+button[type="submit"] { background: #FFB143; color: #060028; }
+.btn-cancel { background: #d2d2d2; color: #222; }
 </style>
