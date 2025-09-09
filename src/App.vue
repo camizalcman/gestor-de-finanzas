@@ -55,39 +55,69 @@
 
   //Calculo de ingresos por categoría
   const ingresosPorCat = computed(() => {
-    const resultado = {}
+    const resultado = []
 
+      //recorro el array de ingresos
       for (let i = 0; i < ingresos.value.length; i++) {
         const ing = ingresos.value[i]
+        let categoriaObj = null
 
+        //recorro el array resultado para ver si ya existe un objeto con la ing.categoría 
+        for (let j = 0; j < resultado.length; j++) {
+          if (resultado[j].categoria === ing.categoria) {
+            categoriaObj = resultado[j]
+            break // si la encontré, corto el bucle, categoriaObj deja de ser null y le asigno el objeto correspondiente a esa cat
+          }
+        }
+        
         //Si la categoría ya existe, sumo
-        if (resultado[ing.categoria] !== undefined) {
-          resultado[ing.categoria] = resultado[ing.categoria] + ing.monto
-        } 
-        //Si la categoría no existe, la creo
-        else {
-          resultado[ing.categoria] = ing.monto
+        if (categoriaObj) {
+          categoriaObj.total += ing.monto
+          categoriaObj.porcentaje = (categoriaObj.total * 100) / totalIngresos.value
+        } else {
+          // Si no existía, creo un objeto nuevo
+          resultado.push({
+            categoria: ing.categoria,
+            total: ing.monto,
+            porcentaje: (ing.monto * 100) / totalIngresos.value
+          })
+        }
       }
-    }
+
     return resultado
   })
 
   //Calculo de gastos por categoría
   const gastosPorCat = computed(() => {
-    const resultado = {}
+    const resultado = []
 
+      //recorro el array de ingresos
       for (let i = 0; i < gastos.value.length; i++) {
         const g = gastos.value[i]
+        let categoriaObj = null
 
+        //recorro el array resultado para ver si ya existe un objeto con la ing.categoría 
+        for (let j = 0; j < resultado.length; j++) {
+          if (resultado[j].categoria === g.categoria) {
+            categoriaObj = resultado[j]
+            break // si la encontré, corto el bucle, categoriaObj deja de ser null y le asigno el objeto correspondiente a esa cat
+          }
+        }
+        
         //Si la categoría ya existe, sumo
-        if (resultado[g.categoria] !== undefined) {
-          resultado[g.categoria] = resultado[g.categoria] + g.monto
-        } 
-        //Si la categoría no existe, la creo
-        else {
-          resultado[g.categoria] = g.monto
+        if (categoriaObj) {
+          categoriaObj.total += g.monto
+          categoriaObj.porcentaje = (categoriaObj.total * 100) / totalGastos.value
+        } else {
+          // Si no existía, creo un objeto nuevo
+          resultado.push({
+            categoria: g.categoria,
+            total: g.monto,
+            porcentaje: (g.monto * 100) / totalGastos.value
+          })
+        }
       }
-    }
+
     return resultado
   })
   
@@ -113,11 +143,22 @@
           <ul>
             <!-- Recorremos todos los ingresos -->
             <li v-for="(i, indice) in ingresos" :key="indice">
-              {{ i.nombre }} — ${{ i.monto }} ({{ i.categoria }})
+              {{ i.nombre }}: ${{ i.monto }} - {{ i.categoria }}
             </li>
           </ul>
         </div>
+
+        <div class="lista">
+          <h2>Lista de ingresos por categoría</h2>
+            <ul>
+              <li v-for="(item, indice) in ingresosPorCat" :key="indice">
+                {{ item.categoria }}: ${{ item.total }} - {{ Math.round(item.porcentaje) }}%
+              </li>
+            </ul>
+        </div>
       </div>
+      
+      <!--GASTOS-->
       <div class="w50">
         <div class="contTotales w100">
           <h2>Total Gastos ${{ totalGastos }}</h2>
@@ -125,14 +166,23 @@
           <button class="button" @click="abrirModal('Gasto')">Agregar gasto</button>
         </div>
 
-        <div  class="lista">
+        <div class="lista">
           <h2>Lista de gastos</h2>
           <ul>
             <!-- Recorremos todos los gastos -->
             <li v-for="(g, indice) in gastos" :key="indice">
-              {{ g.nombre }} — ${{ g.monto }} ({{ g.categoria }})
+              {{ g.nombre }}: ${{ g.monto }} - {{ g.categoria }}
             </li>
           </ul>
+        </div>
+
+        <div class="lista">
+          <h2>Lista de gastos por categoría</h2>
+            <ul>
+              <li v-for="(item, indice) in gastosPorCat" :key="indice">
+                {{ item.categoria }}: ${{ item.total }} - {{ Math.round(item.porcentaje) }}%
+              </li>
+            </ul>
         </div>
       </div>
     </section>
@@ -175,6 +225,7 @@
 .pt2-5{
   padding-top: 2.5em;
 }
+
 
 .contSaldo{
   background-color: #65EEC3;
@@ -227,6 +278,7 @@ main {
   padding: 1em;
   color: white;
   font-family: "Plus Jakarta Sans", sans-serif;
+  margin-bottom: 1.6em;
 }
 
 ul { 
@@ -237,7 +289,6 @@ ul {
 
 li { 
   padding: 12px 0; 
-  border-bottom: 0.5px solid #eee; 
 }
 
 /* MODAL */
