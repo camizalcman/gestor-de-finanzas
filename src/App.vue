@@ -11,7 +11,7 @@
 
   //ESTADO GLOBAL
   //Guardo todos los movimientos (ingresos y gastos) en un solo array
-  const movimientos = ref([])
+  const movimientos = ref([]) 
 
   // Control del modal: null = cerrado, 'Ingreso' = abrir ingreso, 'Gasto' = abrir gasto
   const modalTipo = ref(null)
@@ -128,6 +128,14 @@
     return resultado
   })
   
+  //GRÁFICOS
+  //Creo un array de colores para cada categoría 
+  //La función recibe cuántos colores necesito 
+  function generarColores(n) { 
+    const paleta = ['#36A2EB','#FF6384','#FFCE56','#4BC0C0','#9966FF','#FF9F40','#C9CBCF','#8AC926','#FF006E','#8338EC'] 
+    //Tomo los primeros n colores de la paleta
+    return paleta.slice(0, n)
+  }
   
 </script>
 
@@ -201,11 +209,12 @@
     <div v-if="modalTipo" class="modal-overlay" @click.self="cerrarModal">
       <div class="modal">
         <!-- Componente hijo -->
-        <!-- El hijo está obligado a pasarle un valor al hijo cuando usa este comp.-->
+        <!-- El padre está obligado a pasarle un valor al hijo cuando usa este comp.-->
         <!-- : es la sintaxis de Vue para pasar el valor de una variable de JS (no un texto)".-->
+        <!--Cuando el hijo emite el evento agregar-movimiento, el padre ejecuta la funcion agregarMovimiento (que agrega el movimiento al array movimientos). El @ escucha eventos-->
         <FormMovimiento 
           :tipo="modalTipo"
-          @agregar-movimiento="agregarMovimiento"
+          @agregar-movimiento="agregarMovimiento" 
           @cerrar="cerrarModal"
         />
       </div>

@@ -47,7 +47,8 @@ function enviarMovimiento () {
       nombre: nombre.value
     }
 
-    // Avisamos al padre que hay un nuevo gasto y le pasamos los datos
+    //Avisamos al padre que hay un nuevo gasto y le pasamos los datos
+    //nuevoMovimiento es un objeto que viaja al padre
     emit('agregar-movimiento', nuevoMovimiento)
 
     //vacio los campos
