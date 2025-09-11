@@ -2,6 +2,13 @@
   import { ref, computed } from 'vue'
   import FormMovimiento from './components/FormMovimientos.vue'
 
+  //Importamos lo necesario de Chart.js y vue-chartjs
+  import { Chart as ChartJS, Title, Tooltip, Legend, ArcElement } from 'chart.js'
+  import { Pie } from 'vue-chartjs'
+
+  //Registramos los elementos que Chart.js necesita
+  ChartJS.register(Title, Tooltip, Legend, ArcElement)
+
   //ESTADO GLOBAL
   //Guardo todos los movimientos (ingresos y gastos) en un solo array
   const movimientos = ref([])
@@ -120,6 +127,7 @@
 
     return resultado
   })
+  
   
 </script>
 
