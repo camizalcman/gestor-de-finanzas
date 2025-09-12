@@ -136,6 +136,29 @@
     //Tomo los primeros n colores de la paleta
     return paleta.slice(0, n)
   }
+
+  //Datos del gráfico de torta usando gastosPorCat
+  //Esto crea un objeto con la forma que Chart.js espera.
+  const gastosTortaData = computed(() => ({
+    labels: gastosPorCat.value.map(item => item.categoria), //toma el array gastosPorCat y devuelve un nuevo array solo con los nombres de las categorías.
+
+    //este es un array que Chart.js usa para cada "serie" de datos.
+    datasets: [
+      {
+        data: gastosPorCat.value.map(item => item.total), //toma el array gastosPorCat y devuelve un nuevo array solo con los totales de las categorías. Definen el tamaño de cada porción
+        backgroundColor: generarColores(gastosPorCat.value.length)//le paso como parámetro la cant de categorías
+      }
+    ]
+  }))
+
+  //Visualización del gráfico
+  const gastosTortaOptions = {
+    responsive: true,
+    plugins: {
+      legend: { position: 'bottom' },
+      title: { display: true, text: 'Gastos por categoría' }
+    }
+  }
   
 </script>
 
@@ -194,6 +217,7 @@
 
         <div class="lista">
           <h2>Lista de gastos por categoría</h2>
+          <Pie :data="gastosTortaData" :options="gastosTortaOptions" />
             <ul>
               <li v-for="(item, indice) in gastosPorCat" :key="indice">
                 {{ item.categoria }}: ${{ item.total }} - {{ Math.round(item.porcentaje) }}%
