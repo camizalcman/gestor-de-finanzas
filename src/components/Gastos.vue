@@ -10,17 +10,17 @@ ChartJS.register(Title, Tooltip, Legend, ArcElement)
 
 //Defino la props, datos que el padre le pasa al componente
 const props = defineProps({
-    gastos: Array, //array con todos los ingresos
-    totalGastos: Number //Monto total de todos los ingresos (calculado en App.vue)
+    gastos: Array, //array con todos los gastos
+    totalGastos: Number //Monto total de todos los gastos (calculado en App.vue)
 })
 
 //Calculo de gastos por categoría
   const gastosPorCat = computed(() => {
     const resultado = []
 
-      //recorro el array de ingresos
-      for (let i = 0; i < gastos.value.length; i++) {
-        const g = gastos.value[i]
+      //recorro el array de gastos
+      for (let i = 0; i < props.gastos.length; i++) {
+        const g = props.gastos[i]
         let categoriaObj = null
 
         //recorro el array resultado para ver si ya existe un objeto con la ing.categoría 
@@ -34,13 +34,13 @@ const props = defineProps({
         //Si la categoría ya existe, sumo
         if (categoriaObj) {
           categoriaObj.total += g.monto
-          categoriaObj.porcentaje = (categoriaObj.total * 100) / totalGastos.value
+          categoriaObj.porcentaje = (categoriaObj.total * 100) / props.totalGastos
         } else {
           // Si no existía, creo un objeto nuevo
           resultado.push({
             categoria: g.categoria,
             total: g.monto,
-            porcentaje: (g.monto * 100) / totalGastos.value
+            porcentaje: (g.monto * 100) / props.totalGastos
           })
         }
       }
@@ -100,7 +100,7 @@ const props = defineProps({
           <h2>Lista de gastos</h2>
           <ul>
             <!-- Recorremos todos los gastos -->
-            <li v-for="(g, indice) in gastos" :key="indice">
+            <li v-for="(g, indice) in props.gastos" :key="indice">
               {{ g.nombre }}: ${{ g.monto }} - {{ g.categoria }}
             </li>
           </ul>
@@ -122,6 +122,7 @@ const props = defineProps({
   font-family: "Plus Jakarta Sans", sans-serif;
   margin-bottom: 1.6em; 
 }
+
 .lista{
   border: thin solid #16697a;
   box-shadow: 0 0 10px 2px rgba(29, 29, 29, 0.2);

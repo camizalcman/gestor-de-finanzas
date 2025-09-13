@@ -119,4 +119,24 @@ const ingresosPorCat = computed(() => {
   font-family: "Plus Jakarta Sans", sans-serif;
   margin-bottom: 1.6em; 
 }
+
+.lista{
+  border: thin solid #16697a;
+  box-shadow: 0 0 10px 2px rgba(29, 29, 29, 0.2);
+  border-radius: 8px; 
+  padding: 1em;
+  color:#16697a;
+  font-family: "Plus Jakarta Sans", sans-serif;
+  margin-bottom: 1.6em;
+}
+
+ul { 
+  margin: 0; 
+  padding: 0; 
+  list-style: none; 
+}
+
+li { 
+  padding: 12px 0; 
+}
 </style>
