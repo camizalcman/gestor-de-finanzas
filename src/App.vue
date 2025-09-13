@@ -132,7 +132,7 @@
   //Creo un array de colores para cada categoría 
   //La función recibe cuántos colores necesito 
   function generarColores(n) { 
-    const paleta = ['#36A2EB','#FF6384','#FFCE56','#4BC0C0','#9966FF','#FF9F40','#C9CBCF','#8AC926','#FF006E','#8338EC'] 
+    const paleta = ["#82c0cc","#E76F51","#264653","#F4A261","#8AB17D","#E9C46A","#A8DADC","#457B9D","#FFB4A2","#6D6875"];
     //Tomo los primeros n colores de la paleta
     return paleta.slice(0, n)
   }
@@ -154,9 +154,39 @@
   //Visualización del gráfico
   const gastosTortaOptions = {
     responsive: true,
+    maintainAspectRatio: false,
     plugins: {
       legend: { position: 'bottom' },
-      title: { display: true, text: 'Gastos por categoría' }
+    }
+  }
+
+  //Gráfico ingresos
+  function generarColoresIng(n) { 
+    const paleta = ["#FFB4A2", "#83c5be", "#457B9D", "#E76F51","#F4A261","#8AB17D"];
+    //Tomo los primeros n colores de la paleta
+    return paleta.slice(0, n)
+  }
+
+  //Datos del gráfico de torta usando ingresosPorCat
+  //Esto crea un objeto con la forma que Chart.js espera.
+  const ingresosTortaData = computed(() => ({
+    labels: ingresosPorCat.value.map(item => item.categoria), //toma el array gastosPorCat y devuelve un nuevo array solo con los nombres de las categorías.
+
+    //este es un array que Chart.js usa para cada "serie" de datos.
+    datasets: [
+      {
+        data: ingresosPorCat.value.map(item => item.total), //toma el array gastosPorCat y devuelve un nuevo array solo con los totales de las categorías. Definen el tamaño de cada porción
+        backgroundColor: generarColoresIng(ingresosPorCat.value.length)//le paso como parámetro la cant de categorías
+      }
+    ]
+  }))
+
+  //Visualización del gráfico
+  const ingresosTortaOptions = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { position: 'bottom' },
     }
   }
   
@@ -177,6 +207,17 @@
           <button class="button" @click="abrirModal('Ingreso')">Agregar ingreso</button>
         </div>
 
+        <div class="contGrafico w100">
+          <div style="width: 80%; height: 80%;">
+            <Pie :data="ingresosTortaData" :options="ingresosTortaOptions" />
+          </div>
+            <ul>
+              <li v-for="(item, indice) in ingresosPorCat" :key="indice">
+                {{ item.categoria }}: ${{ item.total }} - {{ Math.round(item.porcentaje) }}%
+              </li>
+            </ul>
+        </div>
+
         <div class="lista">
           <h2>Lista de ingresos</h2>
           <ul>
@@ -187,14 +228,6 @@
           </ul>
         </div>
 
-        <div class="lista">
-          <h2>Lista de ingresos por categoría</h2>
-            <ul>
-              <li v-for="(item, indice) in ingresosPorCat" :key="indice">
-                {{ item.categoria }}: ${{ item.total }} - {{ Math.round(item.porcentaje) }}%
-              </li>
-            </ul>
-        </div>
       </div>
       
       <!--GASTOS-->
@@ -203,6 +236,17 @@
           <h2>Total Gastos ${{ totalGastos }}</h2>
           <!-- Cuando se hace click, abrimos el modal con tipo 'Gasto' -->
           <button class="button" @click="abrirModal('Gasto')">Agregar gasto</button>
+        </div>
+
+        <div class="contGrafico w100">
+          <div style="width: 80%; height: 80%;">
+            <Pie :data="gastosTortaData" :options="gastosTortaOptions" />
+          </div>
+            <ul>
+              <li v-for="(item, indice) in gastosPorCat" :key="indice">
+                {{ item.categoria }}: ${{ item.total }} - {{ Math.round(item.porcentaje) }}%
+              </li>
+            </ul>
         </div>
 
         <div class="lista">
@@ -215,15 +259,6 @@
           </ul>
         </div>
 
-        <div class="lista">
-          <h2>Lista de gastos por categoría</h2>
-          <Pie :data="gastosTortaData" :options="gastosTortaOptions" />
-            <ul>
-              <li v-for="(item, indice) in gastosPorCat" :key="indice">
-                {{ item.categoria }}: ${{ item.total }} - {{ Math.round(item.porcentaje) }}%
-              </li>
-            </ul>
-        </div>
       </div>
     </section>
 
@@ -267,13 +302,26 @@
   padding-top: 2.5em;
 }
 
+.contGrafico{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  border: thin solid #16697a;
+  box-shadow: 0 0 10px 2px rgba(29, 29, 29, 0.2);
+  border-radius: 8px; 
+  padding: 1em;
+  color:#16697a;
+  font-family: "Plus Jakarta Sans", sans-serif;
+  margin-bottom: 1.6em; 
+}
 
 .contSaldo{
-  background-color: #65EEC3;
+  background-color:#489fb5;
   box-shadow: 0 0 8px 5px rgba(255, 255, 255, 0.3);
   border-radius: 10px;
   padding: 1em;
-  color:#060028;
+  color:#030017;
   margin-bottom: 2em;
   font-family: "Plus Jakarta Sans", sans-serif;
   font-weight: 800;
@@ -290,11 +338,11 @@ main {
 }
 
 .contTotales{
-  background-color: #FFB143;
+  background-color: #ffa62b;
   box-shadow: 0 0 8px 5px rgba(255, 255, 255, 0.3);
   border-radius: 10px;
   padding: 1em;
-  color:#060028;
+  color:#030017;
   margin-bottom: 1em;
   font-family: "Plus Jakarta Sans", sans-serif;
   font-weight: 700;
@@ -305,19 +353,19 @@ main {
 .button{
   padding: 10px 14px; 
   border-radius: 8px; 
-  border-color: #060028; 
-  background: #FFB143;
+  border-color: #030017; 
+  background: #ffa62b;
   cursor: pointer; 
-  color: #060028; 
+  color:#030017; 
   font-family: "Plus Jakarta Sans", sans-serif;
 }
 
 .lista{
-  border: thin solid #FFB143;
-  box-shadow: 0 0 8px 5px rgba(255, 255, 255, 0.3);
+  border: thin solid #16697a;
+  box-shadow: 0 0 10px 2px rgba(29, 29, 29, 0.2);
   border-radius: 8px; 
   padding: 1em;
-  color: white;
+  color:#16697a;
   font-family: "Plus Jakarta Sans", sans-serif;
   margin-bottom: 1.6em;
 }
