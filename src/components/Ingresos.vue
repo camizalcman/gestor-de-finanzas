@@ -1,5 +1,6 @@
 <script setup>
 import { computed } from 'vue' //Importo utilidades reactivas
+import CategoriaDetalle from './CategoriaDetalle.vue'
 
 //Importo lo necesario de Chart.js y vue-chartjs
 import { Chart as ChartJS, Title, Tooltip, Legend, ArcElement } from 'chart.js'
@@ -33,14 +34,16 @@ const ingresosPorCat = computed(() => {
         
         //Si la categoría ya existe, sumo
         if (categoriaObj) {
-            categoriaObj.total += ing.monto
-            categoriaObj.porcentaje = (categoriaObj.total * 100) / props.totalIngresos
+            categoriaObj.total += ing.monto,
+            categoriaObj.porcentaje = (categoriaObj.total * 100) / props.totalIngresos,
+            categoriaObj.movimientos.push(ing)
         } else {
             // Si no existía, creo un objeto nuevo
             resultado.push({
                 categoria: ing.categoria,
                 total: ing.monto,
-                porcentaje: (ing.monto * 100) /  props.totalIngresos
+                porcentaje: (ing.monto * 100) /  props.totalIngresos,
+                movimientos:[ing] //creo un array dentro de cada categoría con todos los movimientos que le corresponden
             })
         }
     }
@@ -83,23 +86,20 @@ const ingresosPorCat = computed(() => {
 <template>
 <section>
     <div class="contGrafico w100">
-        <div style="width: 80%; height: 80%;">
+        <div class="torta" style="width: 80%; height: 80%;">
             <Pie :data="ingresosTortaData" :options="ingresosTortaOptions" />
         </div>
-        <ul>
-            <li v-for="(item, indice) in ingresosPorCat" :key="indice">
-                {{ item.categoria }}: ${{ item.total }} - {{ Math.round(item.porcentaje) }}%
-            </li>
-        </ul>
-    </div>
 
-    <div class="lista">
-        <h2>Lista de ingresos</h2>
+        <!-- Recorro categorías e inserto el componente hijo -->
         <ul>
-            <!-- Recorremos todos los ingresos -->
-            <li v-for="(i, indice) in props.ingresos" :key="indice">
-                {{ i.nombre }}: ${{ i.monto }} - {{ i.categoria }}
-            </li>
+            <CategoriaDetalle
+                v-for="cat in ingresosPorCat"
+                :key="cat.categoria"
+                :categoria="cat.categoria"
+                :total="cat.total"
+                :porcentaje="cat.porcentaje"
+                :movimientos="cat.movimientos"
+            />
         </ul>
     </div>
 </section>
@@ -120,23 +120,14 @@ const ingresosPorCat = computed(() => {
   margin-bottom: 1.6em; 
 }
 
-.lista{
-  border: thin solid #16697a;
-  box-shadow: 0 0 10px 2px rgba(29, 29, 29, 0.2);
-  border-radius: 8px; 
-  padding: 1em;
-  color:#16697a;
-  font-family: "Plus Jakarta Sans", sans-serif;
-  margin-bottom: 1.6em;
+.torta{
+    margin-bottom: 1em;
 }
 
 ul { 
   margin: 0; 
   padding: 0; 
-  list-style: none; 
-}
-
-li { 
-  padding: 12px 0; 
+  list-style: none;
+    width: 100%;
 }
 </style>

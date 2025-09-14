@@ -1,5 +1,6 @@
 <script setup>
 import { computed } from 'vue' //Importo utilidades reactivas
+import CategoriaDetalle from './CategoriaDetalle.vue'
 
 //Importo lo necesario de Chart.js y vue-chartjs
 import { Chart as ChartJS, Title, Tooltip, Legend, ArcElement } from 'chart.js'
@@ -33,14 +34,16 @@ const props = defineProps({
         
         //Si la categoría ya existe, sumo
         if (categoriaObj) {
-          categoriaObj.total += g.monto
-          categoriaObj.porcentaje = (categoriaObj.total * 100) / props.totalGastos
+          categoriaObj.total += g.monto,
+          categoriaObj.porcentaje = (categoriaObj.total * 100) / props.totalGastos,
+          categoriaObj.movimientos.push(g)
         } else {
           // Si no existía, creo un objeto nuevo
           resultado.push({
             categoria: g.categoria,
             total: g.monto,
-            porcentaje: (g.monto * 100) / props.totalGastos
+            porcentaje: (g.monto * 100) / props.totalGastos,
+            movimientos:[g] //creo un array dentro de cada categoría con todos los movimientos que le corresponden
           })
         }
       }
@@ -52,7 +55,7 @@ const props = defineProps({
     //Creo un array de colores para cada categoría 
     //La función recibe cuántos colores necesito 
     function generarColores(n) { 
-        const paleta = ["#82c0cc","#E76F51","#264653","#F4A261","#8AB17D","#E9C46A","#A8DADC","#457B9D","#FFB4A2","#6D6875"];
+        const paleta = ["#E76F51","#82c0cc","#264653","#F4A261","#8AB17D","#E9C46A","#A8DADC","#457B9D","#FFB4A2","#6D6875"];
         //Tomo los primeros n colores de la paleta
         return paleta.slice(0, n)
     }
@@ -86,24 +89,21 @@ const props = defineProps({
 <template>
 <section>
     <div class="contGrafico w100">
-          <div style="width: 80%; height: 80%;">
+          <div class="torta" style="width: 80%; height: 80%;">
             <Pie :data="gastosTortaData" :options="gastosTortaOptions" />
           </div>
-            <ul>
-              <li v-for="(item, indice) in gastosPorCat" :key="indice">
-                {{ item.categoria }}: ${{ item.total }} - {{ Math.round(item.porcentaje) }}%
-              </li>
-            </ul>
-        </div>
 
-        <div class="lista">
-          <h2>Lista de gastos</h2>
-          <ul>
-            <!-- Recorremos todos los gastos -->
-            <li v-for="(g, indice) in props.gastos" :key="indice">
-              {{ g.nombre }}: ${{ g.monto }} - {{ g.categoria }}
-            </li>
-          </ul>
+             <!-- Recorro categorías e inserto el componente hijo -->
+            <ul>
+                <CategoriaDetalle
+                    v-for="cat in gastosPorCat"
+                    :key="cat.categoria"
+                    :categoria="cat.categoria"
+                    :total="cat.total"
+                    :porcentaje="cat.porcentaje"
+                    :movimientos="cat.movimientos"
+                />
+            </ul>
         </div>
 </section>
 </template>
@@ -123,23 +123,15 @@ const props = defineProps({
   margin-bottom: 1.6em; 
 }
 
-.lista{
-  border: thin solid #16697a;
-  box-shadow: 0 0 10px 2px rgba(29, 29, 29, 0.2);
-  border-radius: 8px; 
-  padding: 1em;
-  color:#16697a;
-  font-family: "Plus Jakarta Sans", sans-serif;
-  margin-bottom: 1.6em;
+.torta{
+    margin-bottom: 1em;
 }
 
 ul { 
   margin: 0; 
   padding: 0; 
-  list-style: none; 
+  list-style: none;
+    width: 100%;
 }
 
-li { 
-  padding: 12px 0; 
-}
 </style>
