@@ -21,12 +21,15 @@ function toggle() {
 <template>
     <li class="categoria-item">
         <div class="categoria-header" @click="toggle">
-        {{ categoria }}: ${{ total }} — {{ Math.round(porcentaje) }}%
+          {{ categoria }}: ${{ total }} — {{ Math.round(porcentaje) }}%
+           <span class="flecha">
+            {{ abierto ? '↑' : '↓' }}
+          </span>
         </div>
 
     <ul v-if="abierto" class="categoria-detalle">
       <li v-for="(mov, i) in movimientos" :key="i">
-        {{ mov.nombre }} — ${{ mov.monto }}
+        {{ mov.nombre }} : ${{ mov.monto }}
       </li>
     </ul>
   </li>
@@ -47,6 +50,8 @@ function toggle() {
   cursor: pointer;
   color: #030017;
   font-weight: bold;
+  display: flex;
+  justify-content: space-between;
 }
 
 .categoria-detalle {
@@ -57,6 +62,13 @@ function toggle() {
 .categoria-detalle li {
   width: 100%;
   padding: 6px 12px;
+}
+
+.flecha{
+  font-weight: 700;
+  width: 10%;
+  display: flex;
+  justify-content: center;
 }
 
 </style>
