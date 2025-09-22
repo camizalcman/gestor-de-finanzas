@@ -1,12 +1,23 @@
 <script setup>
-  import { ref, computed } from 'vue'
+  import { ref, computed, onMounted } from 'vue'
   import FormMovimiento from './components/FormMovimientos.vue'
   import Ingresos from './components/Ingresos.vue'
   import Gastos from './components/Gastos.vue'
 
+
   //ESTADO GLOBAL
   //Guardo todos los movimientos (ingresos y gastos) en un solo array
   const movimientos = ref([])
+
+  //es un Hook de ciclo de vida de vue que se ejecuta una sola vez cuando el componente ya se montó en el DOM.
+  onMounted(() => {
+    //cargar datos guardados al iniciar la app
+    const guardados = localStorage.getItem('movimientos')
+    if (guardados) {
+      movimientos.value = JSON.parse(guardados)
+    }
+  })
+
   
   // Control del modal: null = cerrado, 'Ingreso' = abrir ingreso, 'Gasto' = abrir gasto
   const modalTipo = ref(null)
@@ -26,6 +37,9 @@
   function agregarMovimiento(nuevo) {
     //"nuevo" es un objeto con { tipo, monto, categoria, nombre }
     movimientos.value.push(nuevo)
+
+    //guardo el movimiento en localStorage
+    localStorage.setItem('movimientos', JSON.stringify(movimientos.value))
 
     // Cerramos el modal automáticamente
     cerrarModal()
@@ -62,13 +76,13 @@
   <main class="w80 pt2-5">
     <!-- SALDO -->
     <section class="contSaldo">
-      <h2>Saldo actual ${{ saldo }}</h2>
+      <h2 class="bold">Saldo actual ${{ saldo }}</h2>
     </section>
 
     <!--Totales ingresos y gastos-->
     <section class="resumen">
       <!-- INGRESOS -->
-      <div class="w50">
+      <div class="w50 w100t w100m">
         <div class="contTotales w100">
           <h2>Total Ingresos ${{ totalIngresos }}</h2>
           <!-- Cuando se hace click, abrimos el modal con tipo 'Ingreso' -->
@@ -84,7 +98,7 @@
       </div>
       
       <!-- GASTOS -->
-      <div class="w50">
+      <div class="w50 w100t w100m">
         <div class="contTotales w100">
           <h2>Total Gastos ${{ totalGastos }}</h2>
           <!-- Cuando se hace click, abrimos el modal con tipo 'Gasto' -->
@@ -148,7 +162,6 @@
   color:#030017;
   margin-bottom: 2em;
   font-family: "Plus Jakarta Sans", sans-serif;
-  font-weight: 800;
 }
 
 main { 
@@ -178,9 +191,9 @@ main {
   padding: 10px 14px; 
   border-radius: 8px; 
   border-color: #030017; 
-  background: #ffa62b;
+  background: #030017;
   cursor: pointer; 
-  color:#030017; 
+  color:#ffffff; 
   font-family: "Plus Jakarta Sans", sans-serif;
 }
 
@@ -200,5 +213,36 @@ main {
   padding: 2em;
   box-shadow: 0 10px 30px rgba(0,0,0,0.2);
   min-width: 340px;
+}
+
+.bold{
+  font-weight: bold;
+}
+
+/* TABLET */
+@media (max-width: 1024px) and (min-width: 768px) {
+  .w100t{
+    width: 100%;
+  }
+  .resumen{
+    flex-wrap: wrap;
+  }
+}
+
+/* MOBILE */
+@media (max-width: 767px) {
+  .w100m{
+    width: 100%;
+  }
+  .resumen{
+    flex-wrap: wrap;
+  }
+  h2{
+    font-size: 1.2em;
+  }
+  .contTotales{
+    display: flex;
+    align-items: center;
+  }
 }
 </style>

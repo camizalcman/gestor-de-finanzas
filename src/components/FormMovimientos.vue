@@ -104,12 +104,6 @@ function enviarMovimiento () {
 </template>
 
 <style scoped>
-.form-mov {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  min-width: 280px;
-}
 input, select {
   padding: 6px;
   border: 1px solid #ccc;
@@ -117,11 +111,32 @@ input, select {
   margin-bottom: 1em;
   margin-left: 0.6em;
 }
+
+.bordeRojo{
+border: 2px solid red;
+}
+
+
+form{
+  font-family: "Plus Jakarta Sans", sans-serif;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 20em;
+}
+
+h3{
+  font-weight: 600;
+  font-size:1.5em;
+  margin-bottom: 1em;
+}
 .actions {
   display: flex;
   gap: 10px;
   justify-content: flex-end;
+  margin-top: 1em;
 }
+
 button {
   padding: 8px 12px;
   border-radius: 6px;
