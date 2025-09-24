@@ -1,6 +1,7 @@
 <script setup>
 
 import { ref, computed } from 'vue' //Importo utilidades reactivas
+import { PlusCircleIcon } from '@heroicons/vue/24/outline'
 
 //PROPS
 const props = defineProps({
@@ -69,7 +70,10 @@ function enviarMovimiento () {
 <template>
    <form @submit.prevent="enviarMovimiento">
     <!-- Cuando se envía el formulario, se ejecuta enviarMovimiento y no recarga la página -->
-    <h3>Agregar {{ props.tipo }}</h3>
+    <div class="df">
+       <PlusCircleIcon style="width: 1.8em; height: 2.4em;" class="mr05"/>
+        <h3>Agregar {{ props.tipo }}</h3>
+    </div>
 
     <div>
       <label>Nombre:</label>
@@ -104,12 +108,30 @@ function enviarMovimiento () {
 </template>
 
 <style scoped>
+template{
+  border: 2px solid red;
+}
+.df{
+  display: flex;
+}
+
+.centerY{
+  align-items: center;
+}
+
+.mr05{
+  margin-right: 0.5em;
+}
+
+
 input, select {
   padding: 6px;
   border: 1px solid #ccc;
   border-radius: 4px;
   margin-bottom: 1em;
   margin-left: 0.6em;
+  font-family: "Plus Jakarta Sans", sans-serif;
+
 }
 
 .bordeRojo{
@@ -122,7 +144,7 @@ form{
   display: flex;
   flex-direction: column;
   gap: 5px;
-  min-width: 20em;
+  min-width: 22em;
 }
 
 h3{
@@ -138,11 +160,22 @@ h3{
 }
 
 button {
-  padding: 8px 12px;
+  padding: 10px 14px;
   border-radius: 6px;
   border: none;
   cursor: pointer;
 }
-button[type="submit"] { background: #FFB143; color: #060028; }
-.btn-cancel { background: #d2d2d2; color: #222; }
+
+button[type="submit"] { 
+  background: #030017; 
+  color: #ffffff; 
+  font-family: "Plus Jakarta Sans", sans-serif;
+
+}
+
+.btn-cancel { 
+  background: #d2d2d2; 
+  color: #030017; 
+  font-family: "Plus Jakarta Sans", sans-serif;
+}
 </style>

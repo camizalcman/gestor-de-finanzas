@@ -3,7 +3,7 @@
   import FormMovimiento from './components/FormMovimientos.vue'
   import Ingresos from './components/Ingresos.vue'
   import Gastos from './components/Gastos.vue'
-
+  import { WalletIcon, CurrencyDollarIcon, ShoppingCartIcon, } from '@heroicons/vue/24/outline'
 
   //ESTADO GLOBAL
   //Guardo todos los movimientos (ingresos y gastos) en un solo array
@@ -76,7 +76,10 @@
   <main class="w80 pt2-5">
     <!-- SALDO -->
     <section class="contSaldo">
-      <h2 class="bold">Saldo actual ${{ saldo }}</h2>
+      <div class="df centerY">
+        <WalletIcon style="width: 1.6em; height: 1.6em;" class="mr05"/>
+        <h2 class="bold">Saldo actual ${{ saldo }}</h2>
+      </div>
     </section>
 
     <!--Totales ingresos y gastos-->
@@ -84,9 +87,12 @@
       <!-- INGRESOS -->
       <div class="w50 w100t w100m">
         <div class="contTotales w100">
-          <h2>Total Ingresos ${{ totalIngresos }}</h2>
+          <div class="df centerY">
+            <CurrencyDollarIcon style="width: 1.6em; height: 1.6em;" class="mr05"/>
+            <h2 class="fontSize">Total Ingresos ${{ totalIngresos }}</h2>
+          </div>
           <!-- Cuando se hace click, abrimos el modal con tipo 'Ingreso' -->
-          <button class="button" @click="abrirModal('Ingreso')">Agregar ingreso</button>
+          <button class="button" @click="abrirModal('Ingreso')"> Agregar ingreso</button>
         </div>
 
         <!-- Componente Ingresos-->
@@ -100,7 +106,10 @@
       <!-- GASTOS -->
       <div class="w50 w100t w100m">
         <div class="contTotales w100">
-          <h2>Total Gastos ${{ totalGastos }}</h2>
+          <div class="df centerY">
+            <ShoppingCartIcon style="width: 1.6em; height: 1.6em;" class="mr05"/>
+            <h2 class="fontSize">Total Gastos ${{ totalGastos }}</h2>
+          </div>
           <!-- Cuando se hace click, abrimos el modal con tipo 'Gasto' -->
           <button class="button" @click="abrirModal('Gasto')">Agregar gasto</button>
         </div>
@@ -134,6 +143,15 @@
 </template>
 
 <style scoped>
+
+.df{
+  display: flex;
+}
+
+.centerY{
+  align-items: center;
+}
+
 .w100{
   width: 100%;
 }
@@ -152,6 +170,10 @@
 
 .pt2-5{
   padding-top: 2.5em;
+}
+
+.mr05{
+  margin-right: 0.5em;
 }
 
 .contSaldo{
@@ -243,6 +265,9 @@ main {
   .contTotales{
     display: flex;
     align-items: center;
+  }
+  .fontSize{
+    font-size: 1em;
   }
 }
 </style>

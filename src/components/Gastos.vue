@@ -2,12 +2,15 @@
 import { computed } from 'vue' //Importo utilidades reactivas
 import CategoriaDetalle from './CategoriaDetalle.vue'
 
-//Importo lo necesario de Chart.js y vue-chartjs
-import { Chart as ChartJS, Title, Tooltip, Legend, ArcElement } from 'chart.js'
-import { Pie } from 'vue-chartjs'
 
-//Registramos los elementos que Chart.js necesita
-ChartJS.register(Title, Tooltip, Legend, ArcElement)
+//Importo lo necesario de Chart.js y vue-chartjs
+import { Chart as ChartJS, Title, Tooltip, Legend, ArcElement} from 'chart.js'
+import { Pie } from 'vue-chartjs'
+import ChartDataLabels from 'chartjs-plugin-datalabels';
+
+//Registro los elementos que Chart.js necesita
+ChartJS.register(Title, Tooltip, Legend, ArcElement, ChartDataLabels);
+
 
 //Defino la props, datos que el padre le pasa al componente
 const props = defineProps({
@@ -68,7 +71,7 @@ const props = defineProps({
         //este es un array que Chart.js usa para cada "serie" de datos.
         datasets: [
             {
-                data: gastosPorCat.value.map(item => item.total), //toma el array gastosPorCat y devuelve un nuevo array solo con los totales de las categorías. Definen el tamaño de cada porción
+                data: gastosPorCat.value.map(item => item.porcentaje), //toma el array gastosPorCat y devuelve un nuevo array solo con los totales de las categorías. Definen el tamaño de cada porción
                 backgroundColor: generarColores(gastosPorCat.value.length)//le paso como parámetro la cant de categorías
             }
         ]
@@ -79,28 +82,44 @@ const props = defineProps({
         responsive: true,
         maintainAspectRatio: false,
         plugins: {
-            legend: { position: 'bottom' },
+          legend: { position: 'bottom' },
+          tooltip: {
+            callbacks: {
+              label: function(context) {
+                const index = context.dataIndex;
+                const categoria = gastosPorCat.value[index];
+                const monto = categoria.total.toLocaleString('es-AR', {
+                  style: 'currency',
+                  currency: 'ARS',
+                  minimumFractionDigits: 0,
+                  maximumFractionDigits: 0
+                });
+                return `${monto}`;
+              }
+            }
+          },
+          datalabels: {
+                formatter: (value) => {
+                    //El 'value' es el porcentaje calculado.
+                    //Esta línea le agrega el símbolo.
+                    return value.toFixed(1) + '%';
+                },
+                color: '#fff', 
+                font: {
+                    weight: 'bold',
+                }
+            }
         }
     }
 
-  
 </script>
 
 <template>
 <section>
-    <div class="contGrafico w100">
-
-      <!-- Si NO hay gastos -->
-      <div v-if="!gastosPorCat.length" class="text-center p-4 text-gray-600">
-        Por el momento no hay gastos registrados
-      </div>
-
-      <!-- Si hay gastos -->
-      <div v-else>
-        <div class="torta" style="width: 80%; height: 80%;">
+    <div class="w100">
+          <div class="torta contGrafico" style="width: 100%; height: 100%;">
             <Pie :data="gastosTortaData" :options="gastosTortaOptions" />
-        </div>
-      </div>    
+          </div>
 
              <!-- Recorro categorías e inserto el componente hijo -->
             <ul>
@@ -118,18 +137,25 @@ const props = defineProps({
 </template>
 
 <style scoped>
+.bordeRojo{
+  border: solid 2px red;
+}
+
+.w100{
+  width: 100%;
+}
+
 .contGrafico{
   display: flex;
   justify-content: center;
   align-items: center;
   flex-direction: column;
-  border: thin solid #16697a;
-  box-shadow: 0 0 10px 2px rgba(29, 29, 29, 0.2);
   border-radius: 8px; 
   padding: 1em;
   color:#16697a;
   font-family: "Plus Jakarta Sans", sans-serif;
   margin-bottom: 1.6em; 
+  width: 100%;
 }
 
 .torta{
