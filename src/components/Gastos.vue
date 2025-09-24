@@ -89,9 +89,18 @@ const props = defineProps({
 <template>
 <section>
     <div class="contGrafico w100">
-          <div class="torta" style="width: 80%; height: 80%;">
+
+      <!-- Si NO hay gastos -->
+      <div v-if="!gastosPorCat.length" class="text-center p-4 text-gray-600">
+        Por el momento no hay gastos registrados
+      </div>
+
+      <!-- Si hay gastos -->
+      <div v-else>
+        <div class="torta" style="width: 80%; height: 80%;">
             <Pie :data="gastosTortaData" :options="gastosTortaOptions" />
-          </div>
+        </div>
+      </div>    
 
              <!-- Recorro categorías e inserto el componente hijo -->
             <ul>
