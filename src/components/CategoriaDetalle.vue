@@ -123,7 +123,7 @@ function cerrarModal() {
 }
 
 .cerrar{
-  color:#030017; 
+  color:#07022d; 
   display: flex;
   align-items: center;
   justify-content: center;

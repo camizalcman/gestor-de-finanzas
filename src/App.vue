@@ -212,8 +212,8 @@ main {
 .button{
   padding: 10px 14px; 
   border-radius: 8px; 
-  border-color: #030017; 
-  background: #030017;
+  border-color: #07022d; 
+  background: #07022d;
   cursor: pointer; 
   color:#ffffff; 
   font-family: "Plus Jakarta Sans", sans-serif;

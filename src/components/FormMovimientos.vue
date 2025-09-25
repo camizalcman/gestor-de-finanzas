@@ -167,7 +167,7 @@ button {
 }
 
 button[type="submit"] { 
-  background: #030017; 
+  background: #07022d; 
   color: #ffffff; 
   font-family: "Plus Jakarta Sans", sans-serif;
 
